@@ -1,0 +1,88 @@
+settings:
+  hud:
+    # How often the action bar is refreshed (in ticks). 2 = 10 times per second.
+    update-interval-ticks: 2
+    # New players see the HUD by default. Toggle with /hud.
+    default-enabled: true
+  kits:
+    # Clear inventory, armor, offhand and effects before giving a kit.
+    clear-inventory: true
+    clear-effects: true
+    # Heal the player when a kit is claimed.
+    heal-on-kit: true
+  reports:
+    # Cooldown between reports from the same player (seconds).
+    cooldown-seconds: 60
+    # Maximum reason length.
+    max-reason-length: 200
+
+# Kit format:
+#   <kit-id>:
+#     display-name: "&cWarrior"       # MiniMessage is not used, classic & colors work
+#     icon: NETHERITE_SWORD           # material shown in the kit list
+#     cooldown-seconds: 60
+#     armor:
+#       helmet: "DIAMOND_HELMET PROTECTION:2"
+#       chestplate: "DIAMOND_CHESTPLATE PROTECTION:2"
+#       leggings: "DIAMOND_LEGGINGS PROTECTION:2"
+#       boots: "DIAMOND_BOOTS PROTECTION:2"
+#     offhand: "SHIELD"
+#     items:
+#       - "NETHERITE_SWORD SHARPNESS:3"
+#       - "GOLDEN_APPLE:8"
+#     effects:
+#       - "SPEED:1:300"               # <effect>:<amplifier>:<duration-seconds>
+#
+# Item format: "<MATERIAL>:<amount> <ENCHANTMENT>:<level> ..."
+kits:
+  warrior:
+    display-name: "&cWarrior"
+    icon: NETHERITE_SWORD
+    cooldown-seconds: 60
+    armor:
+      helmet: "DIAMOND_HELMET PROTECTION:2"
+      chestplate: "DIAMOND_CHESTPLATE PROTECTION:2"
+      leggings: "DIAMOND_LEGGINGS PROTECTION:2"
+      boots: "DIAMOND_BOOTS PROTECTION:2"
+    offhand: "SHIELD"
+    items:
+      - "NETHERITE_SWORD SHARPNESS:3"
+      - "GOLDEN_APPLE:8"
+      - "COOKED_BEEF:16"
+    effects:
+      - "SPEED:1:300"
+
+  archer:
+    display-name: "&aArcher"
+    icon: BOW
+    cooldown-seconds: 60
+    armor:
+      helmet: "CHAINMAIL_HELMET PROTECTION:1"
+      chestplate: "CHAINMAIL_CHESTPLATE PROTECTION:1"
+      leggings: "CHAINMAIL_LEGGINGS PROTECTION:1"
+      boots: "CHAINMAIL_BOOTS PROTECTION:1"
+    items:
+      - "BOW POWER:3 PUNCH:1"
+      - "ARROW:64"
+      - "WOODEN_SWORD SHARPNESS:1"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "SPEED:1:300"
+
+  tank:
+    display-name: "&9Tank"
+    icon: NETHERITE_CHESTPLATE
+    cooldown-seconds: 90
+    armor:
+      helmet: "DIAMOND_HELMET PROTECTION:3"
+      chestplate: "DIAMOND_CHESTPLATE PROTECTION:3"
+      leggings: "DIAMOND_LEGGINGS PROTECTION:3"
+      boots: "DIAMOND_BOOTS PROTECTION:3"
+    offhand: "SHIELD"
+    items:
+      - "NETHERITE_AXE SHARPNESS:2"
+      - "GOLDEN_APPLE:6"
+      - "COOKED_BEEF:16"
+    effects:
+      - "SLOWNESS:0:300"
+      - "RESISTANCE:1:300"
