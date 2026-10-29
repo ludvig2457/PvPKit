@@ -31,6 +31,17 @@ settings:
     tag-seconds: 15
     # Combo window (seconds).
     combo-seconds: 3
+    # Authentic 1.8.9 mechanics. Other modes ignore this section.
+    legacy:
+      # 1.8 sword blocking: damage = damage * multiplier + flat.
+      blocking-damage-multiplier: 0.5
+      blocking-damage-flat: 0.5
+      # Movement speed while blocking (1.8 uses 20%).
+      blocking-speed-multiplier: 0.2
+      # Knockback 1.8 values: normal, sprint hit, vertical.
+      knockback-horizontal: 0.4
+      knockback-sprint-horizontal: 0.9
+      knockback-vertical: 0.4
   scoreboard:
     default-enabled: true
     update-interval-ticks: 20

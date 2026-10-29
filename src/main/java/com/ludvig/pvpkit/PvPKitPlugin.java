@@ -3,6 +3,8 @@ package com.ludvig.pvpkit;
 import com.ludvig.pvpkit.combat.CombatCommand;
 import com.ludvig.pvpkit.combat.CombatListener;
 import com.ludvig.pvpkit.combat.CombatManager;
+import com.ludvig.pvpkit.combat.LegacyCombatListener;
+import com.ludvig.pvpkit.combat.LegacyCombatManager;
 import com.ludvig.pvpkit.hud.HudCommand;
 import com.ludvig.pvpkit.hud.HudListener;
 import com.ludvig.pvpkit.hud.HudManager;
@@ -32,6 +34,7 @@ public final class PvPKitPlugin extends JavaPlugin {
     private ReportManager reportManager;
     private StatsManager statsManager;
     private CombatManager combatManager;
+    private LegacyCombatManager legacyCombatManager;
     private SidebarManager sidebarManager;
     private KitGui kitGui;
     private ReportGui reportGui;
@@ -44,6 +47,7 @@ public final class PvPKitPlugin extends JavaPlugin {
         this.statsManager = new StatsManager(this);
         this.statsManager.load();
         this.combatManager = new CombatManager(this);
+        this.legacyCombatManager = new LegacyCombatManager(this);
         this.kitManager = new KitManager(this);
         this.kitManager.load();
         this.reportManager = new ReportManager(this);
@@ -57,9 +61,11 @@ public final class PvPKitPlugin extends JavaPlugin {
         this.hudManager.start();
         this.sidebarManager.start();
         this.combatManager.start();
+        this.legacyCombatManager.start();
 
         registerListener(new HudListener(this));
         registerListener(new CombatListener(this));
+        registerListener(new LegacyCombatListener(this));
         registerListener(statsManager);
         registerListener(sidebarManager);
         registerListener(kitGui);
@@ -90,6 +96,9 @@ public final class PvPKitPlugin extends JavaPlugin {
         }
         if (combatManager != null) {
             combatManager.stop();
+        }
+        if (legacyCombatManager != null) {
+            legacyCombatManager.stop();
         }
         if (kitManager != null) {
             kitManager.save();
@@ -145,6 +154,10 @@ public final class PvPKitPlugin extends JavaPlugin {
 
     public CombatManager getCombatManager() {
         return combatManager;
+    }
+
+    public LegacyCombatManager getLegacyCombatManager() {
+        return legacyCombatManager;
     }
 
     public SidebarManager getSidebarManager() {

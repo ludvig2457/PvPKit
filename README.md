@@ -116,7 +116,7 @@
 ./gradlew build
 ```
 
-Готовый jar: `build/libs/PvPKit-1.0.2.jar`.
+Готовый jar: `build/libs/PvPKit-1.1.0.jar`.
 
 ## Установка
 
@@ -135,7 +135,23 @@ settings:
     combo-seconds: 3
 ```
 
-- **1.8.9**: attack strength удерживается на максимуме — кулдаун удара отключён, sweep и щиты отключены.
+- **1.8.9**: attack strength удерживается на максимуме, кулдаун удара отключён, sweep и щиты отключены, блокировка мечом (50% урона и 20% скорости), кнокбек 1.8 со спринт-бонусом и сбросом спринта после удара.
+
+Параметры 1.8.9 можно тонко настроить:
+
+```yaml
+settings:
+  combat:
+    legacy:
+      blocking-damage-multiplier: 0.5
+      blocking-damage-flat: 0.5
+      blocking-speed-multiplier: 0.2
+      knockback-horizontal: 0.4
+      knockback-sprint-horizontal: 0.9
+      knockback-vertical: 0.4
+```
+
+Клиентский индикатор атаки остаётся элементом интерфейса клиента и не влияет на серверный урон: сервер принимает каждый удар с полной силой.
 - **1.12**: ванильный attack cooldown, sweep отключён, щиты включены.
 - **1.21.11**: полная ванильная механика Paper 1.21.11.
 
