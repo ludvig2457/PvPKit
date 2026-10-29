@@ -1,7 +1,8 @@
-package com.ludvig.pvpkit.kit;
+package com.ludvig.kitpvp.kit;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.kitpvp.CombatBridge;
+import com.ludvig.kitpvp.KitPvPPlugin;
+import com.ludvig.kitpvp.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -20,10 +21,10 @@ import java.util.Locale;
 
 public final class KitCommand implements CommandExecutor, TabCompleter {
 
-    private final PvPKitPlugin plugin;
+    private final KitPvPPlugin plugin;
     private final KitManager kitManager;
 
-    public KitCommand(PvPKitPlugin plugin) {
+    public KitCommand(KitPvPPlugin plugin) {
         this.plugin = plugin;
         this.kitManager = plugin.getKitManager();
     }
@@ -87,15 +88,15 @@ public final class KitCommand implements CommandExecutor, TabCompleter {
         }
 
         long remaining = kitManager.getRemainingMillis(player, kit);
-        if (remaining > 0L && !player.hasPermission("pvpplugin.kit.bypass")) {
+        if (remaining > 0L && !player.hasPermission("kitpvp.kit.bypass")) {
             sender.sendMessage(Text.prefix("&cKit &f" + kit.id() + " &cis on cooldown for &f"
                     + Text.duration(remaining) + "&c."));
             return;
         }
 
         if (plugin.getConfig().getBoolean("settings.kits.block-in-combat", true)
-                && plugin.getCombatManager().isTagged(player)
-                && !player.hasPermission("pvpplugin.kit.bypass")) {
+                && CombatBridge.isTagged(player)
+                && !player.hasPermission("kitpvp.kit.bypass")) {
             sender.sendMessage(Text.prefix("&cYou cannot claim a kit while in combat."));
             return;
         }
@@ -184,7 +185,7 @@ public final class KitCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean requireAdmin(CommandSender sender) {
-        if (!sender.hasPermission("pvpplugin.kit.admin")) {
+        if (!sender.hasPermission("kitpvp.kit.admin")) {
             sender.sendMessage(Text.prefix("&cYou don't have permission to do that."));
             return false;
         }
@@ -222,7 +223,7 @@ public final class KitCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             suggestions.add("list");
             suggestions.add("preview");
-            if (sender.hasPermission("pvpplugin.kit.admin")) {
+            if (sender.hasPermission("kitpvp.kit.admin")) {
                 suggestions.add("reload");
                 suggestions.add("reset");
                 suggestions.add("give");

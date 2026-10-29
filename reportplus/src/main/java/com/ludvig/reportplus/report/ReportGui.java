@@ -1,7 +1,7 @@
-package com.ludvig.pvpkit.report;
+package com.ludvig.reportplus.report;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.reportplus.ReportPlusPlusPlugin;
+import com.ludvig.reportplus.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,13 +27,13 @@ public final class ReportGui implements Listener {
 
     private final ReportManager reportManager;
 
-    public ReportGui(PvPKitPlugin plugin) {
+    public ReportGui(ReportPlusPlusPlugin plugin) {
         this.reportManager = plugin.getReportManager();
     }
 
     public void open(Player player) {
         ReportMenuHolder holder = new ReportMenuHolder();
-        Inventory inventory = Bukkit.createInventory(holder, 54, Text.color("&8Reports &7| &cPvPKit"));
+        Inventory inventory = Bukkit.createInventory(holder, 54, Text.color("&8Reports &7| &cReport++"));
         holder.inventory = inventory;
 
         ItemStack filler = filler();

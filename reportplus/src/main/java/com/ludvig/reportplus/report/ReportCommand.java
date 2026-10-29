@@ -1,7 +1,7 @@
-package com.ludvig.pvpkit.report;
+package com.ludvig.reportplus.report;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.reportplus.ReportPlusPlusPlugin;
+import com.ludvig.reportplus.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -18,10 +18,10 @@ import java.util.Locale;
 
 public final class ReportCommand implements CommandExecutor, TabCompleter {
 
-    private final PvPKitPlugin plugin;
+    private final ReportPlusPlusPlugin plugin;
     private final ReportManager reportManager;
 
-    public ReportCommand(PvPKitPlugin plugin) {
+    public ReportCommand(ReportPlusPlusPlugin plugin) {
         this.plugin = plugin;
         this.reportManager = plugin.getReportManager();
     }
@@ -55,7 +55,7 @@ public final class ReportCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        int maxLength = plugin.getConfig().getInt("settings.reports.max-reason-length", 200);
+        int maxLength = plugin.getConfig().getInt("settings.max-reason-length", 200);
         String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).trim();
         if (reason.isEmpty()) {
             reporter.sendMessage(Text.prefix("&cPlease provide a reason."));
@@ -66,9 +66,9 @@ public final class ReportCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        int cooldownSeconds = plugin.getConfig().getInt("settings.reports.cooldown-seconds", 60);
+        int cooldownSeconds = plugin.getConfig().getInt("settings.cooldown-seconds", 60);
         long remaining = reportManager.getRemainingCooldown(reporter.getUniqueId(), cooldownSeconds);
-        if (remaining > 0L && !reporter.hasPermission("pvpplugin.report.bypass")) {
+        if (remaining > 0L && !reporter.hasPermission("reportplus.report.bypass")) {
             reporter.sendMessage(Text.prefix("&cPlease wait &f" + Text.duration(remaining)
                     + " &cbefore sending another report."));
             return true;

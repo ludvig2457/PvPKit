@@ -44,9 +44,9 @@ public final class SettingsGui implements Listener {
                 List.of(Text.color("&7Current: " + plugin.getCombatManager().getMode().coloredName()),
                         Text.color("&7Change: &f/combat <mode>"),
                         Text.color("&7Modes: &f1.8.9 &7| &f1.12 &7| &f1.21.11"))));
-        inventory.setItem(16, actionItem(Material.CHEST, "&eKits", "Open the kit menu"));
+        inventory.setItem(16, actionItem(Material.CHEST, "&eKits", "Open the KitPvP menu"));
         inventory.setItem(20, actionItem(Material.PLAYER_HEAD, "&aStats", "View your PvP stats"));
-        inventory.setItem(22, actionItem(Material.WRITABLE_BOOK, "&cReports", "Open the staff report menu"));
+        inventory.setItem(22, actionItem(Material.WRITABLE_BOOK, "&cReports", "Open the Report++ staff menu"));
         inventory.setItem(24, infoItem(Material.BOOK, "&7PvPKit",
                 List.of(Text.color("&7Version: &f" + plugin.getPluginMeta().getVersion()),
                         Text.color("&7Author: &fludvig2457"),
@@ -132,19 +132,27 @@ public final class SettingsGui implements Listener {
             }
             case 16 -> {
                 player.closeInventory();
-                plugin.getKitGui().open(player);
+                if (Bukkit.getPluginManager().isPluginEnabled("KitPvP")) {
+                    player.performCommand("kit");
+                } else {
+                    player.sendMessage(Text.prefix("&cKitPvP is not installed."));
+                }
             }
             case 20 -> {
                 player.closeInventory();
                 player.performCommand("stats");
             }
             case 22 -> {
-                if (!player.hasPermission("pvpplugin.report.staff")) {
+                if (!player.hasPermission("reportplus.report.staff")) {
                     player.sendMessage(Text.prefix("&cYou don't have permission to view reports."));
                     return;
                 }
+                if (!Bukkit.getPluginManager().isPluginEnabled("ReportPlusPlus")) {
+                    player.sendMessage(Text.prefix("&cReport++ is not installed."));
+                    return;
+                }
                 player.closeInventory();
-                plugin.getReportGui().open(player);
+                player.performCommand("reports gui");
             }
             default -> {
                 // Ignore filler clicks.

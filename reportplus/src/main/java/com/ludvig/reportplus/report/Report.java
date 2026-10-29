@@ -1,4 +1,4 @@
-package com.ludvig.pvpkit.report;
+package com.ludvig.reportplus.report;
 
 import java.util.UUID;
 

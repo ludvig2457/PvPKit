@@ -1,7 +1,8 @@
-package com.ludvig.pvpkit.kit;
+package com.ludvig.kitpvp.kit;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.kitpvp.CombatBridge;
+import com.ludvig.kitpvp.KitPvPPlugin;
+import com.ludvig.kitpvp.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -31,17 +32,17 @@ public final class KitGui implements Listener {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private final PvPKitPlugin plugin;
+    private final KitPvPPlugin plugin;
     private final KitManager kitManager;
 
-    public KitGui(PvPKitPlugin plugin) {
+    public KitGui(KitPvPPlugin plugin) {
         this.plugin = plugin;
         this.kitManager = plugin.getKitManager();
     }
 
     public void open(Player player) {
         KitMenuHolder holder = new KitMenuHolder();
-        Inventory inventory = Bukkit.createInventory(holder, 54, Text.color("&8Kits &7| &bPvPKit"));
+        Inventory inventory = Bukkit.createInventory(holder, 54, Text.color("&8Kits &7| &aKitPvP"));
         holder.inventory = inventory;
 
         ItemStack filler = filler();
@@ -109,8 +110,8 @@ public final class KitGui implements Listener {
 
         long remaining = kitManager.getRemainingMillis(player, kit);
         boolean combatBlocked = plugin.getConfig().getBoolean("settings.kits.block-in-combat", true)
-                && plugin.getCombatManager().isTagged(player)
-                && !player.hasPermission("pvpplugin.kit.bypass");
+                && CombatBridge.isTagged(player)
+                && !player.hasPermission("kitpvp.kit.bypass");
 
         List<Component> lore = new ArrayList<>();
         lore.add(Text.color("&7Cooldown: &f" + kit.cooldownSeconds() + "s"));
@@ -163,7 +164,7 @@ public final class KitGui implements Listener {
 
     private void claim(Player player, Kit kit) {
         long remaining = kitManager.getRemainingMillis(player, kit);
-        if (remaining > 0L && !player.hasPermission("pvpplugin.kit.bypass")) {
+        if (remaining > 0L && !player.hasPermission("kitpvp.kit.bypass")) {
             player.sendMessage(Text.prefix("&cKit &f" + kit.id() + " &cis on cooldown for &f"
                     + Text.duration(remaining) + "&c."));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8F, 1.0F);
@@ -171,8 +172,8 @@ public final class KitGui implements Listener {
         }
 
         if (plugin.getConfig().getBoolean("settings.kits.block-in-combat", true)
-                && plugin.getCombatManager().isTagged(player)
-                && !player.hasPermission("pvpplugin.kit.bypass")) {
+                && CombatBridge.isTagged(player)
+                && !player.hasPermission("kitpvp.kit.bypass")) {
             player.sendMessage(Text.prefix("&cYou cannot claim a kit while in combat."));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8F, 1.0F);
             return;

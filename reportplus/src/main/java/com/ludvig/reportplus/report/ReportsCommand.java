@@ -1,7 +1,7 @@
-package com.ludvig.pvpkit.report;
+package com.ludvig.reportplus.report;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.reportplus.ReportPlusPlusPlugin;
+import com.ludvig.reportplus.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -23,10 +23,10 @@ import java.util.Locale;
 
 public final class ReportsCommand implements CommandExecutor, TabCompleter {
 
-    private final PvPKitPlugin plugin;
+    private final ReportPlusPlusPlugin plugin;
     private final ReportManager reportManager;
 
-    public ReportsCommand(PvPKitPlugin plugin) {
+    public ReportsCommand(ReportPlusPlusPlugin plugin) {
         this.plugin = plugin;
         this.reportManager = plugin.getReportManager();
     }
@@ -34,7 +34,7 @@ public final class ReportsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                              @NotNull String label, @NotNull String[] args) {
-        if (!sender.hasPermission("pvpplugin.report.staff")) {
+        if (!sender.hasPermission("reportplus.report.staff")) {
             sender.sendMessage(Text.prefix("&cYou don't have permission to do that."));
             return true;
         }

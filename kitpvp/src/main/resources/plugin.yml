@@ -1,0 +1,24 @@
+name: KitPvP
+version: '${version}'
+main: com.ludvig.kitpvp.KitPvPPlugin
+api-version: '1.21'
+authors: [ludvig2457]
+description: GUI kits, cooldowns and combat-aware claiming for Paper.
+website: https://github.com/ludvig2457
+softdepend: [PvPKit]
+commands:
+  kit:
+    description: Open the kit menu or claim a kit.
+    usage: /kit [list|preview|give|reset|reload|<name>]
+    aliases: [kits]
+    permission: kitpvp.kit
+permissions:
+  kitpvp.kit:
+    description: Allows claiming kits.
+    default: true
+  kitpvp.kit.bypass:
+    description: Bypasses kit cooldowns and combat checks.
+    default: op
+  kitpvp.kit.admin:
+    description: Allows giving and resetting kits, and reloading.
+    default: op

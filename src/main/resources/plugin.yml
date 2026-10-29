@@ -3,27 +3,13 @@ version: '${version}'
 main: com.ludvig.pvpkit.PvPKitPlugin
 api-version: '1.21'
 authors: [ludvig2457]
-description: PvP HUD, KitPvP kits, combat modes, stats and reports for Paper.
+description: PvP combat modes, HUD, stats, sidebar, settings and spawn for Paper.
 website: https://github.com/ludvig2457
 commands:
   hud:
     description: Toggle the PvP HUD.
     usage: /hud [on|off]
     permission: pvpplugin.hud
-  kit:
-    description: Open the kit menu or claim a kit.
-    usage: /kit [list|preview|give|reset|reload|<name>]
-    aliases: [kits]
-    permission: pvpplugin.kit
-  report:
-    description: Report a player to the staff.
-    usage: /report <player> <reason>
-    permission: pvpplugin.report.use
-  reports:
-    description: Manage player reports.
-    usage: /reports [list|gui|tp|close|info]
-    aliases: [reportlist]
-    permission: pvpplugin.report.staff
   pvpkit:
     description: PvPKit administration.
     usage: /pvpkit [reload]
@@ -56,27 +42,6 @@ permissions:
   pvpplugin.hud:
     description: Allows toggling the PvP HUD.
     default: true
-  pvpplugin.kit:
-    description: Allows claiming kits.
-    default: true
-  pvpplugin.kit.bypass:
-    description: Bypasses kit cooldowns and combat checks.
-    default: op
-  pvpplugin.kit.admin:
-    description: Allows giving and resetting kits, and reloading.
-    default: op
-  pvpplugin.report.use:
-    description: Allows creating reports.
-    default: true
-  pvpplugin.report.notify:
-    description: Receives new report notifications.
-    default: op
-  pvpplugin.report.staff:
-    description: Allows viewing and handling reports.
-    default: op
-  pvpplugin.report.bypass:
-    description: Bypasses report cooldown.
-    default: op
   pvpplugin.combat:
     description: Allows viewing the combat system.
     default: true

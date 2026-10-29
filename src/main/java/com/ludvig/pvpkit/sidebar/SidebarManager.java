@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -159,11 +160,18 @@ public final class SidebarManager implements Listener {
         }
     }
 
+    private String lastKit(Player player) {
+        for (MetadataValue value : player.getMetadata("kitpvp_last_kit")) {
+            return value.asString();
+        }
+        return "none";
+    }
+
     private List<Component> buildLines(Player player) {
         StatsManager statsManager = plugin.getStatsManager();
         CombatManager combatManager = plugin.getCombatManager();
         PlayerStats stats = statsManager.getOrCreate(player);
-        String kit = plugin.getKitManager().getLastKit(player);
+        String kit = lastKit(player);
 
         List<Component> lines = new ArrayList<>();
         lines.add(Text.color("&7Kit: &f" + kit));
@@ -174,7 +182,7 @@ public final class SidebarManager implements Listener {
         lines.add(Text.color("&7Combo: &e" + combatManager.getCombo(player)));
         lines.add(Text.color("&7Online: &f" + Bukkit.getOnlinePlayers().size()
                 + " &8| &7Ping: &f" + player.getPing() + "ms"));
-        lines.add(Text.color("&7HUD: &f/hud &8| &7Kits: &f/kit"));
+        lines.add(Text.color("&7HUD: &f/hud &8| &7Stats: &f/stats"));
         lines.add(Text.color("&8github.com/ludvig2457"));
         return lines;
     }

@@ -28,15 +28,15 @@ public final class PvPKitCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             plugin.reloadAll();
-            sender.sendMessage(Text.prefix("&aConfiguration, kits and reports reloaded."));
+            sender.sendMessage(Text.prefix("&aPvPKit configuration reloaded."));
             return true;
         }
 
         sender.sendMessage(Text.color("&8&m--------------------------------"));
         sender.sendMessage(Text.color("&b&lPvPKit &7v" + plugin.getPluginMeta().getVersion()));
-        sender.sendMessage(Text.color("&7HUD: &f/hud &8| &7Kits: &f/kit &8| &7Reports: &f/report"));
-        sender.sendMessage(Text.color("&7Combat: &f/combat &8| &7Stats: &f/stats &8| &7Settings: &f/settings"));
-        sender.sendMessage(Text.color("&7Sidebar: &f/scoreboard &8| &7Spawn: &f/spawn"));
+        sender.sendMessage(Text.color("&7HUD: &f/hud &8| &7Combat: &f/combat &8| &7Stats: &f/stats"));
+        sender.sendMessage(Text.color("&7Sidebar: &f/scoreboard &8| &7Settings: &f/settings &8| &7Spawn: &f/spawn"));
+        sender.sendMessage(Text.color("&7Modules: &fKitPvP &8| &cReportPlusPlus"));
         sender.sendMessage(Text.color("&7Reload: &f/pvpkit reload"));
         sender.sendMessage(Text.color("&8&m--------------------------------"));
         return true;

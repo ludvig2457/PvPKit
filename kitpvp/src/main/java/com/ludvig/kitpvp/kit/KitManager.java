@@ -1,7 +1,7 @@
-package com.ludvig.pvpkit.kit;
+package com.ludvig.kitpvp.kit;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.kitpvp.KitPvPPlugin;
+import com.ludvig.kitpvp.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,6 +14,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -30,13 +31,13 @@ import java.util.UUID;
 
 public final class KitManager {
 
-    private final PvPKitPlugin plugin;
+    private final KitPvPPlugin plugin;
     private final Map<String, Kit> kits = new LinkedHashMap<>();
     private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
     private final Map<UUID, String> lastKits = new HashMap<>();
     private final File cooldownFile;
 
-    public KitManager(PvPKitPlugin plugin) {
+    public KitManager(KitPvPPlugin plugin) {
         this.plugin = plugin;
         this.cooldownFile = new File(plugin.getDataFolder(), "cooldowns.yml");
     }
@@ -204,6 +205,7 @@ public final class KitManager {
 
         player.updateInventory();
         lastKits.put(player.getUniqueId(), kit.id());
+        player.setMetadata("kitpvp_last_kit", new FixedMetadataValue(plugin, kit.id()));
         setCooldown(player.getUniqueId(), kit.id(), kit.cooldownSeconds() * 1000L);
     }
 

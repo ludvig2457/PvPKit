@@ -1,7 +1,7 @@
-package com.ludvig.pvpkit.report;
+package com.ludvig.reportplus.report;
 
-import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.util.Text;
+import com.ludvig.reportplus.ReportPlusPlusPlugin;
+import com.ludvig.reportplus.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -24,14 +24,14 @@ import java.util.UUID;
 
 public final class ReportManager {
 
-    private final PvPKitPlugin plugin;
+    private final ReportPlusPlusPlugin plugin;
     private final Map<Integer, Report> reports = new LinkedHashMap<>();
     private final Map<UUID, Long> lastReportAt = new HashMap<>();
     private final File reportFile;
 
     private int nextId = 1;
 
-    public ReportManager(PvPKitPlugin plugin) {
+    public ReportManager(ReportPlusPlusPlugin plugin) {
         this.plugin = plugin;
         this.reportFile = new File(plugin.getDataFolder(), "reports.yml");
     }
@@ -137,7 +137,7 @@ public final class ReportManager {
 
         boolean delivered = false;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("pvpplugin.report.notify")) {
+            if (player.hasPermission("reportplus.report.notify")) {
                 player.sendMessage(message);
                 delivered = true;
             }

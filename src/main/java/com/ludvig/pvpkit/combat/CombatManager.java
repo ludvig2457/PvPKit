@@ -3,6 +3,7 @@ package com.ludvig.pvpkit.combat;
 import com.ludvig.pvpkit.PvPKitPlugin;
 import com.ludvig.pvpkit.util.Text;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class CombatManager {
+
+    private static final String COMBAT_TAG_KEY = "pvpplugin_combat_until";
 
     private final PvPKitPlugin plugin;
     private final Map<UUID, Long> taggedUntil = new HashMap<>();
@@ -81,6 +84,8 @@ public final class CombatManager {
         long until = System.currentTimeMillis() + tagMillis;
         taggedUntil.put(attacker.getUniqueId(), until);
         taggedUntil.put(victim.getUniqueId(), until);
+        attacker.setMetadata(COMBAT_TAG_KEY, new FixedMetadataValue(plugin, until));
+        victim.setMetadata(COMBAT_TAG_KEY, new FixedMetadataValue(plugin, until));
 
         Combo combo = combos.computeIfAbsent(attacker.getUniqueId(), ignored -> new Combo());
         long comboWindow = Math.max(1, plugin.getConfig().getInt("settings.combat.combo-seconds", 3)) * 1000L;
@@ -120,10 +125,12 @@ public final class CombatManager {
     public void clear(Player player) {
         taggedUntil.remove(player.getUniqueId());
         combos.remove(player.getUniqueId());
+        player.removeMetadata(COMBAT_TAG_KEY, plugin);
     }
 
     public void clearTag(Player player) {
         taggedUntil.remove(player.getUniqueId());
+        player.removeMetadata(COMBAT_TAG_KEY, plugin);
     }
 
     public void cleanup() {

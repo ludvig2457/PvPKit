@@ -1,4 +1,4 @@
-package com.ludvig.pvpkit.kit;
+package com.ludvig.kitpvp.kit;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
