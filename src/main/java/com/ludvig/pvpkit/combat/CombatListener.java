@@ -11,8 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -24,7 +22,7 @@ public final class CombatListener implements Listener {
         this.combatManager = plugin.getCombatManager();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK
                 && !combatManager.getMode().sweepAttack()) {
@@ -45,25 +43,11 @@ public final class CombatListener implements Listener {
             combatManager.handlePlayerHit(attacker, victim);
         }
 
-        if (!combatManager.getMode().attackCooldown()) {
-            attacker.resetCooldown();
-        }
-    }
-
-    @EventHandler
-    public void onSwing(PlayerAnimationEvent event) {
-        if (event.getAnimationType() == PlayerAnimationType.ARM_SWING
-                && !combatManager.getMode().attackCooldown()) {
-            event.getPlayer().resetCooldown();
-        }
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (combatManager.getMode().shields()) {
-            return;
-        }
-        if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
             return;
         }
         if (event.getItem() == null || event.getItem().getType() != Material.SHIELD) {

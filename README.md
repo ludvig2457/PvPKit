@@ -116,7 +116,7 @@
 ./gradlew build
 ```
 
-Готовый jar: `build/libs/PvPKit-1.0.1.jar`.
+Готовый jar: `build/libs/PvPKit-1.0.2.jar`.
 
 ## Установка
 
@@ -135,7 +135,7 @@ settings:
     combo-seconds: 3
 ```
 
-- **1.8.9**: `resetCooldown()` на каждый удар, sweep и щиты отключены.
+- **1.8.9**: attack strength удерживается на максимуме — кулдаун удара отключён, sweep и щиты отключены.
 - **1.12**: ванильный attack cooldown, sweep отключён, щиты включены.
 - **1.21.11**: полная ванильная механика Paper 1.21.11.
 

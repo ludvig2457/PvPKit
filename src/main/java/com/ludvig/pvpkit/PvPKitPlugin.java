@@ -56,6 +56,7 @@ public final class PvPKitPlugin extends JavaPlugin {
 
         this.hudManager.start();
         this.sidebarManager.start();
+        this.combatManager.start();
 
         registerListener(new HudListener(this));
         registerListener(new CombatListener(this));
@@ -86,6 +87,9 @@ public final class PvPKitPlugin extends JavaPlugin {
         }
         if (sidebarManager != null) {
             sidebarManager.stop();
+        }
+        if (combatManager != null) {
+            combatManager.stop();
         }
         if (kitManager != null) {
             kitManager.save();

@@ -3,6 +3,7 @@ package com.ludvig.pvpkit.combat;
 import com.ludvig.pvpkit.PvPKitPlugin;
 import com.ludvig.pvpkit.util.Text;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,9 @@ public final class CombatManager {
     private final Map<UUID, Combo> combos = new HashMap<>();
 
     private CombatMode mode;
+    private BukkitTask attackStrengthTask;
+    private boolean attackStrengthWarned;
+    private boolean attackStrengthConfirmed;
 
     public CombatManager(PvPKitPlugin plugin) {
         this.plugin = plugin;
@@ -23,6 +27,39 @@ public final class CombatManager {
 
     public void load() {
         this.mode = CombatMode.parse(plugin.getConfig().getString("settings.combat.mode", "1.21.11"));
+    }
+
+    public void start() {
+        if (attackStrengthTask != null) {
+            attackStrengthTask.cancel();
+        }
+        attackStrengthTask = plugin.getServer().getScheduler()
+                .runTaskTimer(plugin, this::enforceNoCooldown, 0L, 1L);
+        plugin.getLogger().info("Legacy cooldown hook: " + (AttackStrength.available() ? "ready" : "unavailable"));
+    }
+
+    public void stop() {
+        if (attackStrengthTask != null) {
+            attackStrengthTask.cancel();
+            attackStrengthTask = null;
+        }
+    }
+
+    private void enforceNoCooldown() {
+        if (mode.attackCooldown()) {
+            return;
+        }
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (AttackStrength.fill(player)) {
+                if (!attackStrengthConfirmed) {
+                    attackStrengthConfirmed = true;
+                    plugin.getLogger().info("Legacy mode active: attack cooldown disabled.");
+                }
+            } else if (!attackStrengthWarned) {
+                attackStrengthWarned = true;
+                plugin.getLogger().warning("Could not reset attack cooldown; 1.8.9 mode will feel modern.");
+            }
+        }
     }
 
     public CombatMode getMode() {
@@ -34,10 +71,8 @@ public final class CombatManager {
         plugin.getConfig().set("settings.combat.mode", mode.id());
         plugin.saveConfig();
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (!mode.attackCooldown()) {
-                player.resetCooldown();
-            }
+        if (!mode.attackCooldown()) {
+            enforceNoCooldown();
         }
     }
 
@@ -57,9 +92,6 @@ public final class CombatManager {
         combo.lastHit = now;
         combo.lastVictim = victim.getUniqueId();
 
-        if (!mode.attackCooldown()) {
-            attacker.resetCooldown();
-        }
     }
 
     public int getCombo(Player player) {
