@@ -1,6 +1,8 @@
 package com.ludvig.pvpkit.hud;
 
 import com.ludvig.pvpkit.PvPKitPlugin;
+import com.ludvig.pvpkit.combat.CombatManager;
+import com.ludvig.pvpkit.stats.PlayerStats;
 import com.ludvig.pvpkit.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -15,9 +17,11 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -180,20 +184,53 @@ public final class HudManager {
                 && !player.isGliding()
                 && !player.isSwimming();
 
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        String helmet = armorValue(armor.length > 3 ? armor[3] : null);
-        String chestplate = armorValue(armor.length > 2 ? armor[2] : null);
-        String leggings = armorValue(armor.length > 1 ? armor[1] : null);
-        String boots = armorValue(armor.length > 0 ? armor[0] : null);
+        List<String> parts = new ArrayList<>();
 
-        return "&8[&bPvP&8] &7CPS &f" + leftCps + "&7/&f" + rightCps
-                + " &8| &7Armor " + helmet + "&7/" + chestplate + "&7/" + leggings + "&7/" + boots
-                + " &8| &7Keys " + key(state.forward && moving, "W")
-                + key(state.left && moving, "A")
-                + key(state.backward && moving, "S")
-                + key(state.right && moving, "D")
-                + " " + key(jumping, "SPACE")
-                + " " + key(player.isSneaking(), "SHIFT");
+        if (plugin.getConfig().getBoolean("settings.hud.show-cps", true)) {
+            parts.add("&7CPS &f" + leftCps + "&7/&f" + rightCps);
+        }
+
+        CombatManager combat = plugin.getCombatManager();
+        int combo = combat.getCombo(player);
+        if (plugin.getConfig().getBoolean("settings.hud.show-combo", true) && combo > 1) {
+            parts.add("&7Combo &e" + combo);
+        }
+
+        if (plugin.getConfig().getBoolean("settings.hud.show-armor", true)) {
+            ItemStack[] armor = player.getInventory().getArmorContents();
+            String helmet = armorValue(armor.length > 3 ? armor[3] : null);
+            String chestplate = armorValue(armor.length > 2 ? armor[2] : null);
+            String leggings = armorValue(armor.length > 1 ? armor[1] : null);
+            String boots = armorValue(armor.length > 0 ? armor[0] : null);
+            parts.add("&7Armor " + helmet + "&7/" + chestplate + "&7/" + leggings + "&7/" + boots);
+        }
+
+        if (plugin.getConfig().getBoolean("settings.hud.show-keys", true)) {
+            parts.add("&7Keys " + key(state.forward && moving, "W")
+                    + key(state.left && moving, "A")
+                    + key(state.backward && moving, "S")
+                    + key(state.right && moving, "D")
+                    + " " + key(jumping, "SPACE")
+                    + " " + key(player.isSneaking(), "SHIFT"));
+        }
+
+        PlayerStats stats = plugin.getStatsManager().getOrCreate(player);
+        if (plugin.getConfig().getBoolean("settings.hud.show-streak", true)) {
+            parts.add("&7Streak &6" + stats.streak());
+        }
+
+        if (plugin.getConfig().getBoolean("settings.hud.show-combat", true)) {
+            parts.add("&7Combat " + combat.status(player));
+        }
+
+        if (plugin.getConfig().getBoolean("settings.hud.show-ping", true)) {
+            parts.add("&7Ping &f" + player.getPing() + "ms");
+        }
+
+        if (parts.isEmpty()) {
+            return "&8[&bPvP&8] &7HUD";
+        }
+        return "&8[&bPvP&8] " + String.join(" &8| ", parts);
     }
 
     private String key(boolean active, String label) {

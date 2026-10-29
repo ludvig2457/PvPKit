@@ -3,7 +3,7 @@ version: '${version}'
 main: com.ludvig.pvpkit.PvPKitPlugin
 api-version: '1.21'
 authors: [ludvig2457]
-description: Lightweight PvP HUD, KitPvP kits and player reports for Paper.
+description: PvP HUD, KitPvP kits, combat modes, stats and reports for Paper.
 website: https://github.com/ludvig2457
 commands:
   hud:
@@ -11,8 +11,9 @@ commands:
     usage: /hud [on|off]
     permission: pvpplugin.hud
   kit:
-    description: Open the kit list or claim a kit.
-    usage: /kit [list|reset|reload|<name>]
+    description: Open the kit menu or claim a kit.
+    usage: /kit [list|preview|give|reset|reload|<name>]
+    aliases: [kits]
     permission: pvpplugin.kit
   report:
     description: Report a player to the staff.
@@ -20,13 +21,37 @@ commands:
     permission: pvpplugin.report.use
   reports:
     description: Manage player reports.
-    usage: /reports [list|tp|close|info]
+    usage: /reports [list|gui|tp|close|info]
     aliases: [reportlist]
     permission: pvpplugin.report.staff
   pvpkit:
     description: PvPKit administration.
     usage: /pvpkit [reload]
     permission: pvpplugin.admin
+  combat:
+    description: View or change the combat system.
+    usage: /combat [1.8.9|1.12|1.21.11|info]
+    aliases: [combatsystem]
+    permission: pvpplugin.combat
+  stats:
+    description: View PvP stats and leaderboard.
+    usage: /stats [player|top|reset]
+    aliases: [pvpstats]
+    permission: pvpplugin.stats
+  scoreboard:
+    description: Toggle the PvP sidebar.
+    usage: /scoreboard [on|off]
+    aliases: [sb, sidebar]
+    permission: pvpplugin.scoreboard
+  settings:
+    description: Open the player settings menu.
+    usage: /settings
+    aliases: [prefs]
+    permission: pvpplugin.settings
+  spawn:
+    description: Teleport to spawn.
+    usage: /spawn
+    permission: pvpplugin.spawn
 permissions:
   pvpplugin.hud:
     description: Allows toggling the PvP HUD.
@@ -35,10 +60,10 @@ permissions:
     description: Allows claiming kits.
     default: true
   pvpplugin.kit.bypass:
-    description: Bypasses kit cooldowns.
+    description: Bypasses kit cooldowns and combat checks.
     default: op
   pvpplugin.kit.admin:
-    description: Allows resetting kit cooldowns and reloading kits.
+    description: Allows giving and resetting kits, and reloading.
     default: op
   pvpplugin.report.use:
     description: Allows creating reports.
@@ -51,6 +76,30 @@ permissions:
     default: op
   pvpplugin.report.bypass:
     description: Bypasses report cooldown.
+    default: op
+  pvpplugin.combat:
+    description: Allows viewing the combat system.
+    default: true
+  pvpplugin.combat.admin:
+    description: Allows changing the combat system.
+    default: op
+  pvpplugin.stats:
+    description: Allows viewing stats.
+    default: true
+  pvpplugin.stats.admin:
+    description: Allows resetting stats.
+    default: op
+  pvpplugin.scoreboard:
+    description: Allows toggling the sidebar.
+    default: true
+  pvpplugin.settings:
+    description: Allows opening the settings menu.
+    default: true
+  pvpplugin.spawn:
+    description: Allows using /spawn.
+    default: true
+  pvpplugin.spawn.bypass:
+    description: Bypasses the spawn cooldown.
     default: op
   pvpplugin.admin:
     description: Full plugin administration.

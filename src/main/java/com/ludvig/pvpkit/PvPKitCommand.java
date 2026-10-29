@@ -35,6 +35,8 @@ public final class PvPKitCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Text.color("&8&m--------------------------------"));
         sender.sendMessage(Text.color("&b&lPvPKit &7v" + plugin.getPluginMeta().getVersion()));
         sender.sendMessage(Text.color("&7HUD: &f/hud &8| &7Kits: &f/kit &8| &7Reports: &f/report"));
+        sender.sendMessage(Text.color("&7Combat: &f/combat &8| &7Stats: &f/stats &8| &7Settings: &f/settings"));
+        sender.sendMessage(Text.color("&7Sidebar: &f/scoreboard &8| &7Spawn: &f/spawn"));
         sender.sendMessage(Text.color("&7Reload: &f/pvpkit reload"));
         sender.sendMessage(Text.color("&8&m--------------------------------"));
         return true;

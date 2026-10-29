@@ -23,9 +23,11 @@ import java.util.Locale;
 
 public final class ReportsCommand implements CommandExecutor, TabCompleter {
 
+    private final PvPKitPlugin plugin;
     private final ReportManager reportManager;
 
     public ReportsCommand(PvPKitPlugin plugin) {
+        this.plugin = plugin;
         this.reportManager = plugin.getReportManager();
     }
 
@@ -43,6 +45,14 @@ public final class ReportsCommand implements CommandExecutor, TabCompleter {
         }
 
         String subCommand = args[0].toLowerCase(Locale.ROOT);
+        if (subCommand.equals("gui")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Text.prefix("&cOnly players can open the report menu."));
+                return true;
+            }
+            plugin.getReportGui().open(player);
+            return true;
+        }
         if (subCommand.equals("tp")) {
             teleportToReport(sender, args);
             return true;
@@ -56,7 +66,7 @@ public final class ReportsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(Text.prefix("&7Usage: &f/reports [list|tp <id>|close <id>|info <id>]"));
+        sender.sendMessage(Text.prefix("&7Usage: &f/reports [list|gui|tp <id>|close <id>|info <id>]"));
         return true;
     }
 
@@ -201,7 +211,7 @@ public final class ReportsCommand implements CommandExecutor, TabCompleter {
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 1) {
-            suggestions.addAll(List.of("list", "tp", "close", "info"));
+            suggestions.addAll(List.of("list", "gui", "tp", "close", "info"));
         } else if (args.length == 2) {
             String subCommand = args[0].toLowerCase(Locale.ROOT);
             if (subCommand.equals("tp") || subCommand.equals("close") || subCommand.equals("info")) {

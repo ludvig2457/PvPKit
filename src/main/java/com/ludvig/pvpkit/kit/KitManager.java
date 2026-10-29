@@ -33,6 +33,7 @@ public final class KitManager {
     private final PvPKitPlugin plugin;
     private final Map<String, Kit> kits = new LinkedHashMap<>();
     private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+    private final Map<UUID, String> lastKits = new HashMap<>();
     private final File cooldownFile;
 
     public KitManager(PvPKitPlugin plugin) {
@@ -202,11 +203,16 @@ public final class KitManager {
         }
 
         player.updateInventory();
+        lastKits.put(player.getUniqueId(), kit.id());
         setCooldown(player.getUniqueId(), kit.id(), kit.cooldownSeconds() * 1000L);
     }
 
     private ItemStack itemOrAir(ItemStack item) {
         return item == null ? new ItemStack(Material.AIR) : item.clone();
+    }
+
+    public String getLastKit(Player player) {
+        return lastKits.getOrDefault(player.getUniqueId(), "none");
     }
 
     public Kit getKit(String id) {

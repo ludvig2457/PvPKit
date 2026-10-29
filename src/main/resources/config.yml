@@ -4,22 +4,47 @@ settings:
     update-interval-ticks: 2
     # New players see the HUD by default. Toggle with /hud.
     default-enabled: true
+    show-cps: true
+    show-combo: true
+    show-armor: true
+    show-keys: true
+    show-streak: true
+    show-combat: true
+    show-ping: true
   kits:
     # Clear inventory, armor, offhand and effects before giving a kit.
     clear-inventory: true
     clear-effects: true
     # Heal the player when a kit is claimed.
     heal-on-kit: true
+    # Prevent kit claiming while the player is combat tagged.
+    block-in-combat: true
   reports:
     # Cooldown between reports from the same player (seconds).
     cooldown-seconds: 60
     # Maximum reason length.
     max-reason-length: 200
+  combat:
+    # Available: 1.8.9, 1.12, 1.21.11
+    mode: "1.21.11"
+    # Combat tag duration after player-vs-player damage (seconds).
+    tag-seconds: 15
+    # Combo window (seconds).
+    combo-seconds: 3
+  scoreboard:
+    default-enabled: true
+    update-interval-ticks: 20
+  stats:
+    kill-feed: true
+    killstreak-announce: true
+  spawn:
+    cooldown-seconds: 10
+    block-in-combat: true
 
 # Kit format:
 #   <kit-id>:
-#     display-name: "&cWarrior"       # MiniMessage is not used, classic & colors work
-#     icon: NETHERITE_SWORD           # material shown in the kit list
+#     display-name: "&cWarrior"       # classic & colors work
+#     icon: NETHERITE_SWORD           # material shown in the kit menu
 #     cooldown-seconds: 60
 #     armor:
 #       helmet: "DIAMOND_HELMET PROTECTION:2"
@@ -86,3 +111,230 @@ kits:
     effects:
       - "SLOWNESS:0:300"
       - "RESISTANCE:1:300"
+
+  assassin:
+    display-name: "&5Assassin"
+    icon: NETHERITE_SWORD
+    cooldown-seconds: 75
+    armor:
+      helmet: "CHAINMAIL_HELMET PROTECTION:2"
+      chestplate: "CHAINMAIL_CHESTPLATE PROTECTION:2"
+      leggings: "CHAINMAIL_LEGGINGS PROTECTION:2"
+      boots: "CHAINMAIL_BOOTS PROTECTION:2"
+    items:
+      - "NETHERITE_SWORD SHARPNESS:4"
+      - "ENDER_PEARL:4"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "SPEED:2:300"
+      - "INVISIBILITY:0:120"
+
+  berserker:
+    display-name: "&4Berserker"
+    icon: DIAMOND_AXE
+    cooldown-seconds: 75
+    armor:
+      helmet: "IRON_HELMET PROTECTION:2"
+      chestplate: "IRON_CHESTPLATE PROTECTION:2"
+      leggings: "IRON_LEGGINGS PROTECTION:2"
+      boots: "IRON_BOOTS PROTECTION:2"
+    items:
+      - "DIAMOND_AXE SHARPNESS:3 FIRE_ASPECT:1"
+      - "GOLDEN_APPLE:6"
+      - "COOKED_BEEF:16"
+    effects:
+      - "STRENGTH:1:300"
+      - "SPEED:0:300"
+
+  paladin:
+    display-name: "&6Paladin"
+    icon: GOLDEN_APPLE
+    cooldown-seconds: 90
+    armor:
+      helmet: "DIAMOND_HELMET PROTECTION:2"
+      chestplate: "DIAMOND_CHESTPLATE PROTECTION:2"
+      leggings: "DIAMOND_LEGGINGS PROTECTION:2"
+      boots: "DIAMOND_BOOTS PROTECTION:2"
+    offhand: "SHIELD"
+    items:
+      - "IRON_SWORD SHARPNESS:2"
+      - "GOLDEN_APPLE:8"
+      - "ENCHANTED_GOLDEN_APPLE:1"
+    effects:
+      - "RESISTANCE:1:300"
+      - "REGENERATION:1:120"
+
+  pyromancer:
+    display-name: "&cPyromancer"
+    icon: BLAZE_ROD
+    cooldown-seconds: 80
+    armor:
+      helmet: "LEATHER_HELMET PROTECTION:2"
+      chestplate: "LEATHER_CHESTPLATE PROTECTION:2"
+      leggings: "LEATHER_LEGGINGS PROTECTION:2"
+      boots: "LEATHER_BOOTS PROTECTION:2"
+    items:
+      - "DIAMOND_SWORD SHARPNESS:2 FIRE_ASPECT:2"
+      - "FIRE_CHARGE:16"
+      - "LAVA_BUCKET:1"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "FIRE_RESISTANCE:0:600"
+      - "SPEED:0:300"
+
+  frost:
+    display-name: "&bFrost"
+    icon: ICE
+    cooldown-seconds: 70
+    armor:
+      helmet: "CHAINMAIL_HELMET PROTECTION:2"
+      chestplate: "CHAINMAIL_CHESTPLATE PROTECTION:2"
+      leggings: "CHAINMAIL_LEGGINGS PROTECTION:2"
+      boots: "CHAINMAIL_BOOTS PROTECTION:2"
+    items:
+      - "DIAMOND_SWORD SHARPNESS:2"
+      - "BOW PUNCH:2"
+      - "SNOWBALL:32"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "SPEED:0:300"
+      - "RESISTANCE:0:300"
+
+  ninja:
+    display-name: "&8Ninja"
+    icon: ENDER_PEARL
+    cooldown-seconds: 65
+    armor:
+      helmet: "LEATHER_HELMET PROTECTION:3"
+      chestplate: "LEATHER_CHESTPLATE PROTECTION:3"
+      leggings: "LEATHER_LEGGINGS PROTECTION:3"
+      boots: "LEATHER_BOOTS PROTECTION:3"
+    items:
+      - "IRON_SWORD SHARPNESS:3"
+      - "ENDER_PEARL:8"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "SPEED:3:300"
+      - "JUMP_BOOST:2:300"
+
+  druid:
+    display-name: "&2Druid"
+    icon: SWEET_BERRIES
+    cooldown-seconds: 70
+    armor:
+      helmet: "LEATHER_HELMET PROTECTION:1"
+      chestplate: "LEATHER_CHESTPLATE PROTECTION:1"
+      leggings: "LEATHER_LEGGINGS PROTECTION:1"
+      boots: "LEATHER_BOOTS PROTECTION:1"
+    items:
+      - "WOODEN_SWORD SHARPNESS:2"
+      - "GOLDEN_APPLE:6"
+      - "SWEET_BERRIES:16"
+    effects:
+      - "REGENERATION:2:300"
+      - "ABSORPTION:1:300"
+
+  sniper:
+    display-name: "&7Sniper"
+    icon: CROSSBOW
+    cooldown-seconds: 80
+    armor:
+      helmet: "CHAINMAIL_HELMET PROTECTION:1"
+      chestplate: "CHAINMAIL_CHESTPLATE PROTECTION:1"
+      leggings: "CHAINMAIL_LEGGINGS PROTECTION:1"
+      boots: "CHAINMAIL_BOOTS PROTECTION:1"
+    items:
+      - "BOW POWER:5 PUNCH:2"
+      - "ARROW:32"
+      - "WOODEN_SWORD SHARPNESS:1"
+    effects:
+      - "SPEED:2:300"
+      - "NIGHT_VISION:0:600"
+
+  sumo:
+    display-name: "&eSumo"
+    icon: STICK
+    cooldown-seconds: 30
+    armor:
+      helmet: "LEATHER_HELMET PROTECTION:1"
+      chestplate: "LEATHER_CHESTPLATE PROTECTION:1"
+      leggings: "LEATHER_LEGGINGS PROTECTION:1"
+      boots: "LEATHER_BOOTS PROTECTION:1"
+    items:
+      - "STICK KNOCKBACK:5"
+      - "GOLDEN_APPLE:2"
+    effects:
+      - "SPEED:1:300"
+      - "RESISTANCE:1:300"
+
+  crystal:
+    display-name: "&dCrystal"
+    icon: END_CRYSTAL
+    cooldown-seconds: 120
+    armor:
+      helmet: "DIAMOND_HELMET BLAST_PROTECTION:4"
+      chestplate: "DIAMOND_CHESTPLATE BLAST_PROTECTION:4"
+      leggings: "DIAMOND_LEGGINGS BLAST_PROTECTION:4"
+      boots: "DIAMOND_BOOTS BLAST_PROTECTION:4"
+    items:
+      - "END_CRYSTAL:16"
+      - "OBSIDIAN:32"
+      - "RESPAWN_ANCHOR:2"
+      - "GLOWSTONE:16"
+      - "NETHERITE_SWORD SHARPNESS:2"
+      - "TOTEM_OF_UNDYING:1"
+    effects:
+      - "SPEED:1:300"
+
+  trident:
+    display-name: "&3Trident"
+    icon: TRIDENT
+    cooldown-seconds: 85
+    armor:
+      helmet: "DIAMOND_HELMET PROTECTION:2"
+      chestplate: "DIAMOND_CHESTPLATE PROTECTION:2"
+      leggings: "DIAMOND_LEGGINGS PROTECTION:2"
+      boots: "DIAMOND_BOOTS PROTECTION:2"
+    offhand: "SHIELD"
+    items:
+      - "TRIDENT LOYALTY:3 IMPALING:3"
+      - "GOLDEN_APPLE:6"
+    effects:
+      - "DOLPHINS_GRACE:0:600"
+      - "SPEED:1:300"
+
+  healer:
+    display-name: "&aHealer"
+    icon: ENCHANTED_GOLDEN_APPLE
+    cooldown-seconds: 90
+    armor:
+      helmet: "IRON_HELMET PROTECTION:2"
+      chestplate: "IRON_CHESTPLATE PROTECTION:2"
+      leggings: "IRON_LEGGINGS PROTECTION:2"
+      boots: "IRON_BOOTS PROTECTION:2"
+    offhand: "SHIELD"
+    items:
+      - "IRON_SWORD SHARPNESS:1"
+      - "GOLDEN_APPLE:12"
+      - "ENCHANTED_GOLDEN_APPLE:2"
+    effects:
+      - "REGENERATION:2:300"
+      - "ABSORPTION:2:300"
+
+  miner:
+    display-name: "&fMiner"
+    icon: DIAMOND_PICKAXE
+    cooldown-seconds: 60
+    armor:
+      helmet: "IRON_HELMET PROTECTION:2"
+      chestplate: "IRON_CHESTPLATE PROTECTION:2"
+      leggings: "IRON_LEGGINGS PROTECTION:2"
+      boots: "IRON_BOOTS PROTECTION:2"
+    items:
+      - "DIAMOND_PICKAXE EFFICIENCY:5 UNBREAKING:3"
+      - "IRON_SWORD SHARPNESS:2"
+      - "COBWEB:8"
+      - "GOLDEN_APPLE:4"
+    effects:
+      - "HASTE:2:600"
+      - "SPEED:1:300"
