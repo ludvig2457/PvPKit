@@ -30,7 +30,7 @@ PROJECTS = {
         "icon": "branding/spawnplus.png",
     },
     "KitPvP": {
-        "slug": "kitpvp",
+        "slug": "kitpvp-plugin",
         "title": "KitPvP",
         "description": "16 GUI kits with cooldowns, previews and combat-aware claiming for Paper/Folia.",
         "categories": ["minigame", "pvp", "equipment"],
