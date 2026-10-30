@@ -91,6 +91,7 @@ def find_or_create(repo):
         "license_id": "MIT",
         "source_url": f"https://github.com/ludvig2457/{repo}",
         "issues_url": f"https://github.com/ludvig2457/{repo}/issues",
+        "initial_versions": [],
     }
     print(f"creating project: {meta['title']}", flush=True)
     if DRY_RUN:
