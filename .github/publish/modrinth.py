@@ -7,6 +7,7 @@ from pathlib import Path
 import requests
 
 API = "https://api.modrinth.com/v2"
+API3 = "https://api.modrinth.com/v3"
 TOKEN = os.environ["MODRINTH_TOKEN"]
 HEADERS = {"Authorization": f"Bearer {TOKEN}", "User-Agent": "ludvig2457/pvpkit-publisher/1.0"}
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
@@ -74,7 +75,7 @@ def jar_info(jar):
     return plugin_version, mc_version, f"{plugin_version}+mc{mc_version}"
 
 
-def initial_version(repo, jar, plugin_version, mc_version, version_number):
+def initial_version(repo, plugin_version, mc_version, version_number):
     return {
         "version_title": f"{plugin_version} for {mc_version}",
         "version_number": version_number,
@@ -87,6 +88,7 @@ def initial_version(repo, jar, plugin_version, mc_version, version_number):
         "file_parts": ["file"],
         "primary_file": "file",
         "status": "listed",
+        "ordering": 0,
     }
 
 
@@ -111,18 +113,20 @@ def find_or_create(repo):
     plugin_version, mc_version, version_number = match
 
     payload = {
+        "name": meta["title"],
         "slug": meta["slug"],
-        "title": meta["title"],
-        "description": meta["description"],
-        "body": project_body(repo),
+        "summary": meta["description"],
+        "description": project_body(repo),
         "categories": meta["categories"],
-        "client_side": "unsupported",
-        "server_side": "required",
+        "additional_categories": [],
         "license_id": "MIT",
-        "source_url": f"https://github.com/ludvig2457/{repo}",
-        "issues_url": f"https://github.com/ludvig2457/{repo}/issues",
-        "initial_versions": [initial_version(repo, first, plugin_version, mc_version, version_number)],
+        "link_urls": {
+            "source": f"https://github.com/ludvig2457/{repo}",
+            "issues": f"https://github.com/ludvig2457/{repo}/issues",
+        },
+        "initial_versions": [initial_version(repo, plugin_version, mc_version, version_number)],
         "is_draft": True,
+        "requested_status": "approved",
     }
     print(f"creating project: {meta['title']} as plugin", flush=True)
     if DRY_RUN:
@@ -130,15 +134,18 @@ def find_or_create(repo):
 
     icon_path = Path(meta["icon"])
     with first.open("rb") as jar_handle, icon_path.open("rb") as icon_handle:
-        response = request(
-            "POST",
-            "/project",
+        response = requests.post(
+            f"{API3}/project",
+            headers=HEADERS,
             data={"data": json.dumps(payload)},
             files={
                 "icon": (icon_path.name, icon_handle, "image/png"),
                 "file": (first.name, jar_handle, "application/java-archive"),
             },
         )
+        if response.status_code >= 400:
+            print(f"POST /v3/project -> {response.status_code}: {response.text[:2000]}", flush=True)
+            response.raise_for_status()
     project = response.json()
     print(f"created project: {meta['title']} ({project['id']})", flush=True)
     return project["id"], True
