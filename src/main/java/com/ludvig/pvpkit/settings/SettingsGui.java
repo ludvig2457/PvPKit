@@ -1,6 +1,8 @@
 package com.ludvig.pvpkit.settings;
 
 import com.ludvig.pvpkit.PvPKitPlugin;
+import com.ludvig.pvpkit.SchedulerCompat;
+import com.ludvig.pvpkit.util.CombatBridge;
 import com.ludvig.pvpkit.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -40,17 +42,19 @@ public final class SettingsGui implements Listener {
                 plugin.getHudManager().isEnabled(player), "CPS, armor, keystrokes"));
         inventory.setItem(12, toggleItem(Material.CLOCK, "&6Scoreboard",
                 plugin.getSidebarManager().isEnabled(player), "Kills, KDR, streak, combat"));
-        inventory.setItem(14, infoItem(Material.NETHERITE_SWORD, "&cCombat system",
-                List.of(Text.color("&7Current: " + plugin.getCombatManager().getMode().coloredName()),
+        inventory.setItem(14, infoItem(Material.NETHERITE_SWORD, "&cCombat++",
+                List.of(Text.color("&7Current: " + CombatBridge.mode(player)),
                         Text.color("&7Change: &f/combat <mode>"),
-                        Text.color("&7Modes: &f1.8.9 &7| &f1.12 &7| &f1.21.11"))));
+                        Text.color("&7Modes: &f1.8.9 &7| &f1.12 &7| &f1.21.11"),
+                        Text.color("&eClick &7to open"))));
         inventory.setItem(16, actionItem(Material.CHEST, "&eKits", "Open the KitPvP menu"));
         inventory.setItem(20, actionItem(Material.PLAYER_HEAD, "&aStats", "View your PvP stats"));
         inventory.setItem(22, actionItem(Material.WRITABLE_BOOK, "&cReports", "Open the Report++ staff menu"));
         inventory.setItem(24, infoItem(Material.BOOK, "&7PvPKit",
-                List.of(Text.color("&7Version: &f" + plugin.getPluginMeta().getVersion()),
+                List.of(Text.color("&7Version: &f" + plugin.getDescription().getVersion()),
                         Text.color("&7Author: &fludvig2457"),
                         Text.color("&8github.com/ludvig2457"))));
+        inventory.setItem(26, actionItem(Material.ENDER_PEARL, "&bSpawn++", "Teleport to spawn"));
 
         player.openInventory(inventory);
         player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.6F, 1.3F);
@@ -127,6 +131,10 @@ public final class SettingsGui implements Listener {
                 refresh(player);
             }
             case 14 -> {
+                if (!Bukkit.getPluginManager().isPluginEnabled("CombatPlusPlus")) {
+                    player.sendMessage(Text.prefix("&cCombat++ is not installed."));
+                    return;
+                }
                 player.closeInventory();
                 player.performCommand("combat");
             }
@@ -141,6 +149,14 @@ public final class SettingsGui implements Listener {
             case 20 -> {
                 player.closeInventory();
                 player.performCommand("stats");
+            }
+            case 26 -> {
+                if (!Bukkit.getPluginManager().isPluginEnabled("SpawnPlusPlus")) {
+                    player.sendMessage(Text.prefix("&cSpawn++ is not installed."));
+                    return;
+                }
+                player.closeInventory();
+                player.performCommand("spawn");
             }
             case 22 -> {
                 if (!player.hasPermission("reportplus.report.staff")) {
@@ -161,7 +177,7 @@ public final class SettingsGui implements Listener {
     }
 
     private void refresh(Player player) {
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        SchedulerCompat.runForPlayer(plugin, player, () -> {
             if (player.isOnline()) {
                 open(player);
             }

@@ -1,6 +1,7 @@
 package com.ludvig.pvpkit.stats;
 
 import com.ludvig.pvpkit.PvPKitPlugin;
+import com.ludvig.pvpkit.util.CombatBridge;
 import com.ludvig.pvpkit.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -134,7 +135,7 @@ public final class StatsManager implements Listener {
 
         if (killer != null && !killer.getUniqueId().equals(victim.getUniqueId())) {
             PlayerStats killerStats = addKill(killer, victim);
-            plugin.getCombatManager().clearTag(victim);
+            CombatBridge.clearTag(victim);
 
             if (plugin.getConfig().getBoolean("settings.stats.kill-feed", true)) {
                 Component feed = Text.color("&8[&c&lKILL&8] &f" + killer.getName()
@@ -154,7 +155,7 @@ public final class StatsManager implements Listener {
         }
 
         addDeath(victim);
-        plugin.getCombatManager().clearTag(victim);
+        CombatBridge.clearTag(victim);
     }
 
     public void save() {

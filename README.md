@@ -1,68 +1,68 @@
 # PvPKit Suite
 
-Набор из трёх независимых плагинов для **Paper 1.21.11**: PvP-ядро, киты и репорты.
+Набор независимых PvP-плагинов для Paper/Folia. Каждый модуль ставится отдельно и не требует остальных.
 
-| Плагин | Jar | Отвечает за |
+| Плагин | Репозиторий | Отвечает за |
 |---|---|---|
-| **PvPKit** | `PvPKit-1.2.0.jar` | Боевые системы, HUD, статистика, сайдбар, настройки, spawn |
-| **KitPvP** | `KitPvP-1.2.0.jar` | Киты, GUI, кулдауны, выдача |
-| **ReportPlusPlus** | `ReportPlusPlus-1.2.0.jar` | Жалобы, GUI, уведомления стаффу |
+| **PvPKit** | [ludvig2457/PvPKit](https://github.com/ludvig2457/PvPKit) | HUD, статистика, сайдбар, `/settings` |
+| **Combat++** | [ludvig2457/CombatPlusPlus](https://github.com/ludvig2457/CombatPlusPlus) | Режимы 1.8.9 / 1.12 / 1.21.11, combat tag, комбо |
+| **Spawn++** | [ludvig2457/SpawnPlusPlus](https://github.com/ludvig2457/SpawnPlusPlus) | `/spawn`, кулдаун, запрет в бою, `/spawn set` |
+| **KitPvP** | [ludvig2457/KitPvP](https://github.com/ludvig2457/KitPvP) | 16 китов, GUI, кулдауны |
+| **Report++** | [ludvig2457/ReportPlusPlus](https://github.com/ludvig2457/ReportPlusPlus) | Жалобы, GUI, уведомления стаффу |
 
-Все три плагина можно ставить вместе или по отдельности. `KitPvP` мягко зависит от `PvPKit` и читает combat tag через metadata, поэтому модули не связаны классами.
+Модули общаются через metadata, а не через классы:
 
-Собрано и проверено на Paper `1.21.11-132`, Java 21.
+- `pvpplugin_combat_until` — конец combat tag (Combat++).
+- `combatplus_combo` / `combatplus_combo_until` — комбо (Combat++).
+- `combatplus_mode` — текущий режим (Combat++).
+- `kitpvp_last_kit` — последний выданный кит (KitPvP).
+
+## Поддерживаемые версии
+
+Один исходник собирается под каждую версию Paper API:
+
+`1.16.5`, `1.17.1`, `1.18.2`, `1.19.4`, `1.20.6`, `1.21.1`, `1.21.4`, `1.21.8`, `1.21.11`
+
+Платформы: **Paper** и **Folia** (scheduler-совместимость через `SchedulerCompat`).
+
+> **Spigot:** текущие сборки используют Paper API (Adventure, Paper scheduler), поэтому на чистом Spigot не загрузятся. Для Spigot нужна отдельная legacy-сборка.
+>
+> **1.8.9:** это режим боя `/combat 1.8.9`, а не поддержка сервера 1.8.9. Сервер должен быть Paper/Folia 1.16.5+; клиенты 1.8.9 могут подключаться через ViaVersion.
 
 ## Сборка
 
 ```bash
+# версия по умолчанию — 1.21.11
 ./gradlew build
+
+# конкретная версия Paper API
+./gradlew build -PmcVersion=1.20.6-R0.1-SNAPSHOT
 ```
 
-Готовые jars:
+Jar: `build/libs/PvPKit-1.3.0.jar`.
 
-```
-build/libs/PvPKit-1.2.0.jar
-kitpvp/build/libs/KitPvP-1.2.0.jar
-reportplus/build/libs/ReportPlusPlus-1.2.0.jar
-```
-
-## Установка
-
-1. Положите нужные jar в `plugins/`.
-2. Запустите сервер.
-3. Настройте `plugins/PvPKit/config.yml`, `plugins/KitPvP/config.yml` и `plugins/ReportPlusPlus/config.yml`.
-4. Примените изменения: `/pvpkit reload`, `/kit reload`.
-
----
-
-## PvPKit
+## PvPKit (этот репозиторий)
 
 ### Возможности
-- Боевые системы `1.8.9`, `1.12`, `1.21.11`.
-- Полноценный legacy-режим 1.8.9: без attack cooldown, без sweep, без щитов, блокировка мечом, кнокбек 1.8, W-tap.
-- HUD: CPS, броня, keystrokes, ping, серия, комбо, combat tag.
+- HUD: CPS, комбо, броня, keystrokes, серия, combat tag, ping.
 - Статистика: kills, deaths, KDR, серии, топ, kill feed.
-- Настраиваемый сайдбар.
-- Меню `/settings` с быстрым доступом к китам и репортам, если модули установлены.
-- `/spawn` с кулдауном и запретом в бою.
-- Combat tag публикуется в metadata `pvpplugin_combat_until` для других плагинов.
+- Сайдбар: кит, статы, combat, комбо, онлайн, пинг.
+- `/settings`: HUD, сайдбар, переходы в Combat++, Spawn++, KitPvP и Report++.
+- Работает без остальных модулей; отсутствующие модули просто скрываются.
 
 ### Команды
-
 | Команда | Описание |
 |---|---|
 | `/hud [on\|off]` | Переключить HUD |
-| `/combat [mode\|info]` | Показать или сменить боевую систему |
 | `/stats [player]` | Статистика игрока |
-| `/stats top [page]` | Топ по убийствам |
+| `/stats top [page]` | Топ игроков |
 | `/stats reset <player>` | Сбросить статистику |
 | `/scoreboard [on\|off]` | Переключить сайдбар |
 | `/settings` | Меню настроек |
-| `/spawn` | Телепорт на спавн |
-| `/pvpkit [reload]` | Информация и перезагрузка |
+| `/pvpkit [reload]` | Информация и reload |
 
 ### Права
-`pvpplugin.hud`, `pvpplugin.combat`, `pvpplugin.combat.admin`, `pvpplugin.stats`, `pvpplugin.stats.admin`, `pvpplugin.scoreboard`, `pvpplugin.settings`, `pvpplugin.spawn`, `pvpplugin.spawn.bypass`, `pvpplugin.admin`.
+`pvpplugin.hud`, `pvpplugin.stats`, `pvpplugin.stats.admin`, `pvpplugin.scoreboard`, `pvpplugin.settings`, `pvpplugin.admin`.
 
 ### Файлы
 ```
@@ -71,108 +71,16 @@ plugins/PvPKit/
 └── stats.yml
 ```
 
-### 1.8.9
-- Attack strength удерживается на максимуме — кулдаун удара отключён.
-- Клиентский индикатор атаки остаётся элементом интерфейса клиента и не влияет на серверный урон.
-- Sweep и щиты отключены.
-- Блокировка мечом: 50% урона и 20% скорости.
-- Кнокбек: `0.4`, спринт-удар `0.9`, вверх `0.4`.
-- Спринт сбрасывается после удара.
-- Параметры настраиваются:
+## Установка
 
-```yaml
-settings:
-  combat:
-    legacy:
-      blocking-damage-multiplier: 0.5
-      blocking-damage-flat: 0.5
-      blocking-speed-multiplier: 0.2
-      knockback-horizontal: 0.4
-      knockback-sprint-horizontal: 0.9
-      knockback-vertical: 0.4
-```
+1. Скачайте jar каждого нужного плагина для своей версии сервера из Releases.
+2. Положите их в `plugins/`.
+3. Запустите сервер.
+4. Настройте `plugins/<Plugin>/config.yml` и примените `/pvpkit reload`, `/combat reload`, `/spawn reload`, `/kit reload`.
 
----
+## CI и релизы
 
-## KitPvP
-
-### Возможности
-- 16 готовых китов: Warrior, Archer, Tank, Assassin, Berserker, Paladin, Pyromancer, Frost, Ninja, Druid, Sniper, Sumo, Crystal, Trident, Healer, Miner.
-- GUI китов с кулдаунами и предпросмотром.
-- Настройка предметов, брони, offhand, зачарований и эффектов.
-- Кулдауны сохраняются в `cooldowns.yml`.
-- Запрет взятия кита в бою, если установлен PvPKit.
-- Выдача, сброс кулдаунов и reload.
-
-### Команды
-
-| Команда | Описание |
-|---|---|
-| `/kit` / `/kits` | Открыть GUI китов |
-| `/kit list` | Список китов |
-| `/kit <kit>` | Получить кит |
-| `/kit preview <kit>` | Предпросмотр |
-| `/kit give <player> <kit>` | Выдать кит |
-| `/kit reset <player> [kit]` | Сбросить кулдаун |
-| `/kit reload` | Перезагрузить конфиг |
-
-### Права
-`kitpvp.kit`, `kitpvp.kit.bypass`, `kitpvp.kit.admin`.
-
-### Файлы
-```
-plugins/KitPvP/
-├── config.yml
-└── cooldowns.yml
-```
-
-Последний кит публикуется в metadata `kitpvp_last_kit`, поэтому сайдбар PvPKit показывает его без прямой зависимости.
-
----
-
-## ReportPlusPlus
-
-### Возможности
-- `/report <player> <reason>` для онлайн- и офлайн-игроков.
-- Жалобы сохраняются в `reports.yml`.
-- Уведомления стаффу с `[TP]` и `[Close]`.
-- GUI жалоб: ЛКМ — телепорт, ПКМ — детали, Shift+ЛКМ — закрыть.
-- Список, детали, телепорт к цели или сохранённой локации.
-- Кулдаун и лимит длины причины.
-
-### Команды
-
-| Команда | Описание |
-|---|---|
-| `/report <player> <reason>` | Отправить жалобу |
-| `/reports` | Список открытых жалоб |
-| `/reports gui` | GUI жалоб |
-| `/reports tp <id>` | Телепорт к цели жалобы |
-| `/reports close <id>` | Закрыть жалобу |
-| `/reports info <id>` | Детали жалобы |
-
-### Права
-`reportplus.report.use`, `reportplus.report.notify`, `reportplus.report.staff`, `reportplus.report.bypass`.
-
-### Файлы
-```
-plugins/ReportPlusPlus/
-├── config.yml
-└── reports.yml
-```
-
----
-
-## Структура репозитория
-
-```
-PvPKit/
-├── src/                    # PvPKit core
-├── kitpvp/                 # KitPvP
-├── reportplus/             # ReportPlusPlus
-├── build.gradle
-└── settings.gradle
-```
+GitHub Actions собирает матрицу всех 9 версий и загружает отдельный jar на каждый релизный тег.
 
 ## Лицензия
 

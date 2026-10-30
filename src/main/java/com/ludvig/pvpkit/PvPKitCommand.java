@@ -33,13 +33,28 @@ public final class PvPKitCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(Text.color("&8&m--------------------------------"));
-        sender.sendMessage(Text.color("&b&lPvPKit &7v" + plugin.getPluginMeta().getVersion()));
-        sender.sendMessage(Text.color("&7HUD: &f/hud &8| &7Combat: &f/combat &8| &7Stats: &f/stats"));
-        sender.sendMessage(Text.color("&7Sidebar: &f/scoreboard &8| &7Settings: &f/settings &8| &7Spawn: &f/spawn"));
-        sender.sendMessage(Text.color("&7Modules: &fKitPvP &8| &cReportPlusPlus"));
-        sender.sendMessage(Text.color("&7Reload: &f/pvpkit reload"));
+        sender.sendMessage(Text.color("&b&lPvPKit &7v" + plugin.getDescription().getVersion()));
+        sender.sendMessage(Text.color("&7HUD: &f/hud &8| &7Stats: &f/stats &8| &7Sidebar: &f/scoreboard"));
+        sender.sendMessage(Text.color("&7Settings: &f/settings &8| &7Reload: &f/pvpkit reload"));
+        sender.sendMessage(Text.color("&7Modules: &f" + modules()));
+        sender.sendMessage(Text.color("&7Combat: &f/combat &8| &7Spawn: &f/spawn &8| &7Kits: &f/kit &8| &7Reports: &f/reports"));
         sender.sendMessage(Text.color("&8&m--------------------------------"));
         return true;
+    }
+
+    private String modules() {
+        List<String> result = new java.util.ArrayList<>();
+        addModule(result, "CombatPlusPlus", "Combat++");
+        addModule(result, "SpawnPlusPlus", "Spawn++");
+        addModule(result, "KitPvP", "KitPvP");
+        addModule(result, "ReportPlusPlus", "Report++");
+        return result.isEmpty() ? "&7none" : String.join(" &8| &f", result);
+    }
+
+    private void addModule(List<String> result, String pluginName, String label) {
+        if (plugin.getServer().getPluginManager().isPluginEnabled(pluginName)) {
+            result.add(label);
+        }
     }
 
     @Override

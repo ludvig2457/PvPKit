@@ -1,9 +1,10 @@
 package com.ludvig.pvpkit.sidebar;
 
 import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.combat.CombatManager;
+import com.ludvig.pvpkit.SchedulerCompat;
 import com.ludvig.pvpkit.stats.PlayerStats;
 import com.ludvig.pvpkit.stats.StatsManager;
+import com.ludvig.pvpkit.util.CombatBridge;
 import com.ludvig.pvpkit.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -15,17 +16,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 
 public final class SidebarManager implements Listener {
@@ -35,10 +34,10 @@ public final class SidebarManager implements Listener {
 
     private final PvPKitPlugin plugin;
     private final NamespacedKey sidebarKey;
-    private final Map<UUID, Boolean> enabled = new HashMap<>();
-    private final Map<UUID, Scoreboard> boards = new HashMap<>();
+    private final Map<UUID, Boolean> enabled = new ConcurrentHashMap<>();
+    private final Map<UUID, Scoreboard> boards = new ConcurrentHashMap<>();
 
-    private BukkitTask task;
+    private Object task;
 
     public SidebarManager(PvPKitPlugin plugin) {
         this.plugin = plugin;
@@ -53,18 +52,16 @@ public final class SidebarManager implements Listener {
         }
 
         int interval = Math.max(5, plugin.getConfig().getInt("settings.scoreboard.update-interval-ticks", 20));
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 20L, interval);
+        task = SchedulerCompat.repeatForPlayers(plugin, 20L, interval, this::tickPlayer);
     }
 
     public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
+        SchedulerCompat.cancel(task);
+        task = null;
 
         Scoreboard main = Bukkit.getScoreboardManager().getMainScoreboard();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setScoreboard(main);
+            SchedulerCompat.runForPlayer(plugin, player, () -> player.setScoreboard(main));
         }
         boards.clear();
     }
@@ -113,13 +110,9 @@ public final class SidebarManager implements Listener {
         return value;
     }
 
-    private void tick() {
-        plugin.getCombatManager().cleanup();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (isEnabled(player)) {
-                render(player);
-            }
+    private void tickPlayer(Player player) {
+        if (isEnabled(player)) {
+            render(player);
         }
     }
 
@@ -148,7 +141,7 @@ public final class SidebarManager implements Listener {
             return;
         }
 
-        objective.displayName(Text.color("&b&lPvPKit &7| " + plugin.getCombatManager().getMode().coloredName()));
+        objective.displayName(Text.color("&b&lPvPKit &7| " + CombatBridge.mode(player)));
 
         List<Component> lines = buildLines(player);
         for (int index = 0; index < ENTRIES.length; index++) {
@@ -169,7 +162,6 @@ public final class SidebarManager implements Listener {
 
     private List<Component> buildLines(Player player) {
         StatsManager statsManager = plugin.getStatsManager();
-        CombatManager combatManager = plugin.getCombatManager();
         PlayerStats stats = statsManager.getOrCreate(player);
         String kit = lastKit(player);
 
@@ -178,8 +170,8 @@ public final class SidebarManager implements Listener {
         lines.add(Text.color("&7Kills: &a" + stats.kills() + " &8| &7Deaths: &c" + stats.deaths()));
         lines.add(Text.color("&7KDR: &e" + Text.formatDouble(stats.kdr())));
         lines.add(Text.color("&7Streak: &6" + stats.streak() + " &8| &7Best: &6" + stats.bestStreak()));
-        lines.add(Text.color("&7Combat: " + combatManager.status(player)));
-        lines.add(Text.color("&7Combo: &e" + combatManager.getCombo(player)));
+        lines.add(Text.color("&7Combat: " + CombatBridge.status(player)));
+        lines.add(Text.color("&7Combo: &e" + CombatBridge.combo(player)));
         lines.add(Text.color("&7Online: &f" + Bukkit.getOnlinePlayers().size()
                 + " &8| &7Ping: &f" + player.getPing() + "ms"));
         lines.add(Text.color("&7HUD: &f/hud &8| &7Stats: &f/stats"));
@@ -201,7 +193,4 @@ public final class SidebarManager implements Listener {
         return isEnabled(player) ? "&aenabled" : "&cdisabled";
     }
 
-    public String modeId() {
-        return plugin.getCombatManager().getMode().id().toLowerCase(Locale.ROOT);
-    }
 }

@@ -1,5 +1,0 @@
-settings:
-  # Cooldown between reports from the same player (seconds).
-  cooldown-seconds: 60
-  # Maximum reason length.
-  max-reason-length: 200

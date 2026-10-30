@@ -2,8 +2,9 @@ name: PvPKit
 version: '${version}'
 main: com.ludvig.pvpkit.PvPKitPlugin
 api-version: '1.21'
+folia-supported: true
 authors: [ludvig2457]
-description: PvP combat modes, HUD, stats, sidebar, settings and spawn for Paper.
+description: PvPKit - HUD, stats, sidebar and settings for Paper/Folia.
 website: https://github.com/ludvig2457
 commands:
   hud:
@@ -14,11 +15,6 @@ commands:
     description: PvPKit administration.
     usage: /pvpkit [reload]
     permission: pvpplugin.admin
-  combat:
-    description: View or change the combat system.
-    usage: /combat [1.8.9|1.12|1.21.11|info]
-    aliases: [combatsystem]
-    permission: pvpplugin.combat
   stats:
     description: View PvP stats and leaderboard.
     usage: /stats [player|top|reset]
@@ -34,20 +30,10 @@ commands:
     usage: /settings
     aliases: [prefs]
     permission: pvpplugin.settings
-  spawn:
-    description: Teleport to spawn.
-    usage: /spawn
-    permission: pvpplugin.spawn
 permissions:
   pvpplugin.hud:
     description: Allows toggling the PvP HUD.
     default: true
-  pvpplugin.combat:
-    description: Allows viewing the combat system.
-    default: true
-  pvpplugin.combat.admin:
-    description: Allows changing the combat system.
-    default: op
   pvpplugin.stats:
     description: Allows viewing stats.
     default: true
@@ -60,12 +46,6 @@ permissions:
   pvpplugin.settings:
     description: Allows opening the settings menu.
     default: true
-  pvpplugin.spawn:
-    description: Allows using /spawn.
-    default: true
-  pvpplugin.spawn.bypass:
-    description: Bypasses the spawn cooldown.
-    default: op
   pvpplugin.admin:
     description: Full plugin administration.
     default: op

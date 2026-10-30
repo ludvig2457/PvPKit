@@ -1,10 +1,5 @@
 package com.ludvig.pvpkit;
 
-import com.ludvig.pvpkit.combat.CombatCommand;
-import com.ludvig.pvpkit.combat.CombatListener;
-import com.ludvig.pvpkit.combat.CombatManager;
-import com.ludvig.pvpkit.combat.LegacyCombatListener;
-import com.ludvig.pvpkit.combat.LegacyCombatManager;
 import com.ludvig.pvpkit.hud.HudCommand;
 import com.ludvig.pvpkit.hud.HudListener;
 import com.ludvig.pvpkit.hud.HudManager;
@@ -12,7 +7,6 @@ import com.ludvig.pvpkit.settings.SettingsCommand;
 import com.ludvig.pvpkit.settings.SettingsGui;
 import com.ludvig.pvpkit.sidebar.SidebarCommand;
 import com.ludvig.pvpkit.sidebar.SidebarManager;
-import com.ludvig.pvpkit.spawn.SpawnCommand;
 import com.ludvig.pvpkit.stats.StatsCommand;
 import com.ludvig.pvpkit.stats.StatsManager;
 import org.bukkit.command.CommandExecutor;
@@ -24,8 +18,6 @@ public final class PvPKitPlugin extends JavaPlugin {
 
     private HudManager hudManager;
     private StatsManager statsManager;
-    private CombatManager combatManager;
-    private LegacyCombatManager legacyCombatManager;
     private SidebarManager sidebarManager;
     private SettingsGui settingsGui;
 
@@ -35,33 +27,25 @@ public final class PvPKitPlugin extends JavaPlugin {
 
         this.statsManager = new StatsManager(this);
         this.statsManager.load();
-        this.combatManager = new CombatManager(this);
-        this.legacyCombatManager = new LegacyCombatManager(this);
         this.hudManager = new HudManager(this);
         this.sidebarManager = new SidebarManager(this);
         this.settingsGui = new SettingsGui(this);
 
         this.hudManager.start();
         this.sidebarManager.start();
-        this.combatManager.start();
-        this.legacyCombatManager.start();
 
         registerListener(new HudListener(this));
-        registerListener(new CombatListener(this));
-        registerListener(new LegacyCombatListener(this));
         registerListener(statsManager);
         registerListener(sidebarManager);
         registerListener(settingsGui);
 
         register("hud", new HudCommand(this));
         register("pvpkit", new PvPKitCommand(this));
-        register("combat", new CombatCommand(this));
         register("stats", new StatsCommand(this));
         register("scoreboard", new SidebarCommand(this));
         register("settings", new SettingsCommand(this));
-        register("spawn", new SpawnCommand(this));
 
-        getLogger().info("PvPKit core enabled: combat, HUD, stats, sidebar, settings and spawn are ready.");
+        getLogger().info("PvPKit core enabled: HUD, stats, sidebar and settings are ready.");
     }
 
     @Override
@@ -71,12 +55,6 @@ public final class PvPKitPlugin extends JavaPlugin {
         }
         if (sidebarManager != null) {
             sidebarManager.stop();
-        }
-        if (combatManager != null) {
-            combatManager.stop();
-        }
-        if (legacyCombatManager != null) {
-            legacyCombatManager.stop();
         }
         if (statsManager != null) {
             statsManager.save();
@@ -101,7 +79,6 @@ public final class PvPKitPlugin extends JavaPlugin {
 
     public void reloadAll() {
         reloadConfig();
-        combatManager.load();
         hudManager.start();
         sidebarManager.start();
     }
@@ -112,14 +89,6 @@ public final class PvPKitPlugin extends JavaPlugin {
 
     public StatsManager getStatsManager() {
         return statsManager;
-    }
-
-    public CombatManager getCombatManager() {
-        return combatManager;
-    }
-
-    public LegacyCombatManager getLegacyCombatManager() {
-        return legacyCombatManager;
     }
 
     public SidebarManager getSidebarManager() {

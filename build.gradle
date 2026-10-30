@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.ludvig'
-version = '1.2.0'
+version = '1.3.0'
 
 repositories {
     mavenCentral()
@@ -11,7 +11,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    def legacyPaper = mcVersion.startsWith('1.16')
+    compileOnly(legacyPaper
+            ? "com.destroystokyo.paper:paper-api:${mcVersion}"
+            : "io.papermc.paper:paper-api:${mcVersion}")
 }
 
 java {
@@ -39,8 +42,4 @@ tasks.jar {
             'Implementation-Version': project.version
         )
     }
-}
-
-tasks.named('build') {
-    dependsOn ':kitpvp:build', ':reportplus:build'
 }

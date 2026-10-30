@@ -1,8 +1,9 @@
 package com.ludvig.pvpkit.hud;
 
 import com.ludvig.pvpkit.PvPKitPlugin;
-import com.ludvig.pvpkit.combat.CombatManager;
+import com.ludvig.pvpkit.SchedulerCompat;
 import com.ludvig.pvpkit.stats.PlayerStats;
+import com.ludvig.pvpkit.util.CombatBridge;
 import com.ludvig.pvpkit.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -14,16 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 
 public final class HudManager {
@@ -33,11 +32,11 @@ public final class HudManager {
 
     private final PvPKitPlugin plugin;
     private final NamespacedKey hudKey;
-    private final Map<UUID, PlayerState> states = new HashMap<>();
-    private final Map<UUID, String> lastLines = new HashMap<>();
-    private final Set<UUID> disabled = new HashSet<>();
+    private final Map<UUID, PlayerState> states = new ConcurrentHashMap<>();
+    private final Map<UUID, String> lastLines = new ConcurrentHashMap<>();
+    private final Set<UUID> disabled = ConcurrentHashMap.newKeySet();
 
-    private BukkitTask task;
+    private Object task;
 
     public HudManager(PvPKitPlugin plugin) {
         this.plugin = plugin;
@@ -52,14 +51,12 @@ public final class HudManager {
         }
 
         int interval = Math.max(1, plugin.getConfig().getInt("settings.hud.update-interval-ticks", 2));
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 20L, interval);
+        task = SchedulerCompat.repeatForPlayers(plugin, 20L, interval, this::tickPlayer);
     }
 
     public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
+        SchedulerCompat.cancel(task);
+        task = null;
     }
 
     public void loadPlayer(Player player) {
@@ -155,22 +152,19 @@ public final class HudManager {
         state.lastMoveNanos = System.nanoTime();
     }
 
-    private void tick() {
+    private void tickPlayer(Player player) {
+        if (!isEnabled(player)) {
+            return;
+        }
+
         long now = System.currentTimeMillis();
         long nowNanos = System.nanoTime();
+        PlayerState state = states.computeIfAbsent(player.getUniqueId(), ignored -> new PlayerState());
+        String line = render(player, state, now, nowNanos);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!isEnabled(player)) {
-                continue;
-            }
-
-            PlayerState state = states.computeIfAbsent(player.getUniqueId(), ignored -> new PlayerState());
-            String line = render(player, state, now, nowNanos);
-
-            if (!line.equals(lastLines.get(player.getUniqueId()))) {
-                lastLines.put(player.getUniqueId(), line);
-                player.sendActionBar(Text.color(line));
-            }
+        if (!line.equals(lastLines.get(player.getUniqueId()))) {
+            lastLines.put(player.getUniqueId(), line);
+            player.sendActionBar(Text.color(line));
         }
     }
 
@@ -190,8 +184,7 @@ public final class HudManager {
             parts.add("&7CPS &f" + leftCps + "&7/&f" + rightCps);
         }
 
-        CombatManager combat = plugin.getCombatManager();
-        int combo = combat.getCombo(player);
+        int combo = CombatBridge.combo(player);
         if (plugin.getConfig().getBoolean("settings.hud.show-combo", true) && combo > 1) {
             parts.add("&7Combo &e" + combo);
         }
@@ -220,7 +213,7 @@ public final class HudManager {
         }
 
         if (plugin.getConfig().getBoolean("settings.hud.show-combat", true)) {
-            parts.add("&7Combat " + combat.status(player));
+            parts.add("&7Combat " + CombatBridge.status(player));
         }
 
         if (plugin.getConfig().getBoolean("settings.hud.show-ping", true)) {
