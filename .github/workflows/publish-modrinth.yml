@@ -48,23 +48,6 @@ jobs:
             gh api -H 'Accept: application/vnd.github.raw' "repos/ludvig2457/$repo/contents/CHANGELOG.md" > "dist/$repo/CHANGELOG.md" || true
           done
 
-      - name: Check token
-        env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        run: |
-          python3 - <<'PY'
-          import os
-          import requests
-          token = os.environ["MODRINTH_TOKEN"]
-          print("length", len(token), "prefix", token[:4], "suffix", token[-4:])
-          for label, header in (
-              ("bearer", {"Authorization": f"Bearer {token}"}),
-              ("raw", {"Authorization": token}),
-              ("x-api-token", {"X-Api-Token": token}),
-          ):
-              response = requests.get("https://api.modrinth.com/v2/user", headers=header, timeout=30)
-              print(label, response.status_code, response.text[:120])
-
       - name: Publish
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

@@ -154,8 +154,6 @@ def upload_versions(repo, project_id):
 
 
 def main():
-    me = request("GET", "/user")
-    print(f"authenticated as {me.json()['username']}", flush=True)
     selected = [name.strip() for name in os.environ.get("PROJECTS", ",".join(PROJECTS)).split(",") if name.strip()]
     for repo in selected:
         if repo not in PROJECTS:
