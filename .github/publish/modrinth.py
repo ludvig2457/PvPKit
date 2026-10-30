@@ -74,7 +74,7 @@ def find_or_create(repo):
     if existing.status_code == 200:
         project = existing.json()
         print(f"project exists: {meta['title']} ({project['id']})", flush=True)
-        return project["id"]
+        return project["id"], False
     if existing.status_code != 404:
         print(f"GET project {meta['slug']} -> {existing.status_code}: {existing.text[:1000]}", flush=True)
         existing.raise_for_status()
@@ -92,10 +92,11 @@ def find_or_create(repo):
         "source_url": f"https://github.com/ludvig2457/{repo}",
         "issues_url": f"https://github.com/ludvig2457/{repo}/issues",
         "initial_versions": [],
+        "is_draft": True,
     }
     print(f"creating project: {meta['title']}", flush=True)
     if DRY_RUN:
-        return None
+        return None, False
 
     icon_path = Path(meta["icon"])
     files = {"icon": (icon_path.name, icon_path.open("rb"), "image/png")}
@@ -107,7 +108,7 @@ def find_or_create(repo):
     )
     project = response.json()
     print(f"created project: {meta['title']} ({project['id']})", flush=True)
-    return project["id"]
+    return project["id"], True
 
 
 def upload_versions(repo, project_id):
@@ -160,9 +161,12 @@ def main():
         if repo not in PROJECTS:
             print(f"unknown project: {repo}", flush=True)
             continue
-        project_id = find_or_create(repo)
+        project_id, created = find_or_create(repo)
         if project_id:
             upload_versions(repo, project_id)
+            if created and not DRY_RUN:
+                request("PATCH", f"/project/{project_id}", json={"requested_status": "approved"})
+                print(f"submitted for review: {repo}", flush=True)
     print("done", flush=True)
 
 
