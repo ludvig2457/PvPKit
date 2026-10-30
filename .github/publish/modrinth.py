@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import sys
 import time
 from pathlib import Path
 
@@ -11,7 +10,6 @@ API = "https://api.modrinth.com/v2"
 TOKEN = os.environ["MODRINTH_TOKEN"]
 HEADERS = {"Authorization": f"Bearer {TOKEN}", "User-Agent": "ludvig2457/pvpkit-publisher/1.0"}
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
-TAG = os.environ.get("RELEASE_TAG", "v1.0.0")
 DIST = Path("dist")
 
 PROJECTS = {
@@ -68,6 +66,30 @@ def changelog(repo):
     return "Initial release."
 
 
+def jar_info(jar):
+    match = re.search(r"-(\d+\.\d+\.\d+)-mc([0-9.]+)\.jar$", jar.name)
+    if not match:
+        return None
+    plugin_version, mc_version = match.groups()
+    return plugin_version, mc_version, f"{plugin_version}+mc{mc_version}"
+
+
+def initial_version(repo, jar, plugin_version, mc_version, version_number):
+    return {
+        "version_title": f"{plugin_version} for {mc_version}",
+        "version_number": version_number,
+        "version_body": changelog(repo),
+        "game_versions": [mc_version],
+        "release_channel": "release",
+        "loaders": ["paper", "folia"],
+        "featured": False,
+        "dependencies": [],
+        "file_parts": ["file"],
+        "primary_file": "file",
+        "status": "listed",
+    }
+
+
 def find_or_create(repo):
     meta = PROJECTS[repo]
     existing = requests.get(f"{API}/project/{meta['slug']}", headers=HEADERS, timeout=60)
@@ -79,6 +101,15 @@ def find_or_create(repo):
         print(f"GET project {meta['slug']} -> {existing.status_code}: {existing.text[:1000]}", flush=True)
         existing.raise_for_status()
 
+    jars = sorted((DIST / repo).glob("*.jar"))
+    if not jars:
+        raise RuntimeError(f"no jars for {repo}")
+    first = jars[0]
+    match = jar_info(first)
+    if not match:
+        raise RuntimeError(f"unrecognized jar: {first.name}")
+    plugin_version, mc_version, version_number = match
+
     payload = {
         "slug": meta["slug"],
         "title": meta["title"],
@@ -87,25 +118,27 @@ def find_or_create(repo):
         "categories": meta["categories"],
         "client_side": "unsupported",
         "server_side": "required",
-        "project_type": "plugin",
         "license_id": "MIT",
         "source_url": f"https://github.com/ludvig2457/{repo}",
         "issues_url": f"https://github.com/ludvig2457/{repo}/issues",
-        "initial_versions": [],
+        "initial_versions": [initial_version(repo, first, plugin_version, mc_version, version_number)],
         "is_draft": True,
     }
-    print(f"creating project: {meta['title']}", flush=True)
+    print(f"creating project: {meta['title']} as plugin", flush=True)
     if DRY_RUN:
         return None, False
 
     icon_path = Path(meta["icon"])
-    files = {"icon": (icon_path.name, icon_path.open("rb"), "image/png")}
-    response = request(
-        "POST",
-        "/project",
-        data={"data": json.dumps(payload)},
-        files=files,
-    )
+    with first.open("rb") as jar_handle, icon_path.open("rb") as icon_handle:
+        response = request(
+            "POST",
+            "/project",
+            data={"data": json.dumps(payload)},
+            files={
+                "icon": (icon_path.name, icon_handle, "image/png"),
+                "file": (first.name, jar_handle, "application/java-archive"),
+            },
+        )
     project = response.json()
     print(f"created project: {meta['title']} ({project['id']})", flush=True)
     return project["id"], True
@@ -114,18 +147,14 @@ def find_or_create(repo):
 def upload_versions(repo, project_id):
     folder = DIST / repo
     jars = sorted(folder.glob("*.jar"))
-    if not jars:
-        print(f"no jars for {repo}", flush=True)
-        return
     existing = request("GET", f"/project/{project_id}/version").json()
     existing_numbers = {version["version_number"] for version in existing}
     for jar in jars:
-        match = re.search(r"-(\d+\.\d+\.\d+)-mc([0-9.]+)\.jar$", jar.name)
-        if not match:
+        info = jar_info(jar)
+        if not info:
             print(f"skip unrecognized jar: {jar.name}", flush=True)
             continue
-        plugin_version, mc_version = match.groups()
-        version_number = f"{plugin_version}+mc{mc_version}"
+        plugin_version, mc_version, version_number = info
         if version_number in existing_numbers:
             print(f"version exists: {repo} {version_number}", flush=True)
             continue
