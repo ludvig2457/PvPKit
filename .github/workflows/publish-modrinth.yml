@@ -1,0 +1,57 @@
+name: Publish Modrinth
+
+on:
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: Comma separated project directory names
+        required: false
+        default: CombatPlusPlus,SpawnPlusPlus,KitPvP,ReportPlusPlus
+      tag:
+        description: GitHub release tag with jars
+        required: false
+        default: v1.0.0
+      dry_run:
+        description: Validate without creating or uploading
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python3 -m pip install --quiet requests
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          mkdir -p dist
+          for repo in $(echo "${{ inputs.projects }}" | tr ',' ' '); do
+            mkdir -p "dist/$repo"
+            gh release download "$TAG" -R "ludvig2457/$repo" -D "dist/$repo" --pattern '*.jar' --clobber
+            gh api -H 'Accept: application/vnd.github.raw' "repos/ludvig2457/$repo/readme" > "dist/$repo/README.md"
+            gh api -H 'Accept: application/vnd.github.raw' "repos/ludvig2457/$repo/contents/CHANGELOG.md" > "dist/$repo/CHANGELOG.md" || true
+          done
+
+      - name: Publish
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          PROJECTS: ${{ inputs.projects }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python3 .github/publish/modrinth.py
